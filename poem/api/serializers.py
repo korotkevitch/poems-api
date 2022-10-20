@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Poem
+from poem.models import Poem
 
 
 class PoemSerializer(serializers.ModelSerializer):
