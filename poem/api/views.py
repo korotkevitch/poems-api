@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
-from .models import Poem, Holiday
+from .models import Poem, Author, Holiday
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import PoemSerializer
 
