@@ -33,14 +33,14 @@ class Author(models.Model):
 
 
 class Poem(models.Model):
-    holiday = models.ForeignKey(Author, verbose_name="Праздник", on_delete=models.CASCADE)
+    holiday = models.ForeignKey(Holiday, verbose_name="Праздник", on_delete=models.CASCADE)
     text = models.TextField('Текст')
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(verbose_name='Опубликовано', default=True)
     user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.holiday
 
     class META:

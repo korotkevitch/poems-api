@@ -13,7 +13,7 @@ from .serializers import PoemSerializer
 class PoemAPIList(generics.ListCreateAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    # permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly, )
 
 
 class PoemAPIUpdate(generics.RetrieveUpdateAPIView):
