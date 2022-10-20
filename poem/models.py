@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 class Holiday(models.Model):
     name = models.CharField('Праздник', max_length=30)
     description = models.TextField(blank=True)
+    slug = models.SlugField(max_length=30, unique=True)
 
     def __str__(self):
         return self.name
@@ -18,7 +19,7 @@ class Holiday(models.Model):
 class Author(models.Model):
     first_name = models.CharField('Имя', max_length=20)
     last_name = models.CharField('Фамилия', max_length=20)
-    slug = models.SlugField(max_length=110, unique=True, blank=True)
+    slug = models.SlugField(max_length=20, unique=True, blank=True)
 
     def get_url(self):
         return reverse('single_holiday', kwargs={'slug': self.slug})
