@@ -14,13 +14,13 @@ from .serializers import PoemSerializer
 class PoemAPIList(generics.ListCreateAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 
 class PoemAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
 
 class PoemAPIDestroy(generics.RetrieveDestroyAPIView):
