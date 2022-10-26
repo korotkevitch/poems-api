@@ -39,7 +39,7 @@ class Poem(models.Model):
     text = models.TextField('Текст')
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
-    # active = models.BooleanField(default=True)
+    is_published = models.BooleanField("Опубликовано", default=True)
     user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
     avg_rating = models.FloatField("Средний рейтинг", default=3)
     number_rating = models.IntegerField("Количество оценок", default=1)
