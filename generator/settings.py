@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -156,7 +157,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
         'user': '100/day',
-        'review-create': '2/day',
+        'review-create': '100/day',
         'review-list': '100/day',
         'review-detail': '100/day',
     },

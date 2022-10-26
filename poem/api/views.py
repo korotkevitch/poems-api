@@ -59,23 +59,23 @@ class ReviewCreate(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
-        watchlist = WatchList.objects.get(pk=pk)
+        poem = Poem.objects.get(pk=pk)
 
         review_user = self.request.user
-        review_queryset = Review.objects.filter(watchlist=watchlist, review_user=review_user)
+        review_queryset = Review.objects.filter(poem=poem, review_user=review_user)
 
         if review_queryset.exists():
-            raise ValidationError("You have already reviewed this movie!")
+            raise ValidationError("Вы уже оценивали это стихотворение!")
 
-        if watchlist.number_rating == 0:
-            watchlist.avg_rating = serializer.validated_data['rating']
+        if poem.number_rating == 0:
+            poem.avg_rating = serializer.validated_data['rating']
         else:
-            watchlist.avg_rating = (watchlist.avg_rating + serializer.validated_data['rating'])/2
+            poem.avg_rating = (poem.avg_rating + serializer.validated_data['rating'])/2
 
-        watchlist.number_rating = watchlist.number_rating + 1
-        watchlist.save()
+        poem.number_rating = poem.number_rating + 1
+        poem.save()
 
-        serializer.save(watchlist=watchlist, review_user=review_user)
+        serializer.save(poem=poem, review_user=review_user)
 
 
 class ReviewList(generics.ListAPIView):
@@ -88,7 +88,7 @@ class ReviewList(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs['pk']
-        return Review.objects.filter(watchlist=pk)
+        return Review.objects.filter(poem=pk)
 
 
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):

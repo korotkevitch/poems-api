@@ -17,12 +17,13 @@ admin.site.register(Author, AuthorAdmin)
 
 
 class PoemAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'holiday', 'text', 'time_create', 'time_update', 'is_published', 'user']
+    list_display = ['id', 'title', 'holiday', 'text', 'time_create', 'time_update', 'user', 'number_rating',
+                    'avg_rating']
     list_display_links = ['id', 'title']
 admin.site.register(Poem, PoemAdmin)
 
 
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['id', 'poem', 'description', 'rating', 'active', 'created', 'update']
+    list_display = ['id', 'poem', 'review_user', 'description', 'rating', 'created', 'update']
     list_display_links = ['id', 'poem']
 admin.site.register(Review, ReviewAdmin)
