@@ -34,19 +34,25 @@ class PoemAPIDestroy(generics.RetrieveDestroyAPIView):
     permission_classes = [IsAdminUser]
 
 
-class UserReview(generics.ListAPIView):
-    # queryset = Review.objects.all()
+class RatingReview(generics.ListAPIView):
     serializer_class = ReviewSerializer
-    # permission_classes = [IsAuthenticated]
-    # throttle_classes = [ReviewListThrottle, AnonRateThrottle]
-
-    # def get_queryset(self):
-    #     username = self.kwargs['username']
-    #     return Review.objects.filter(review_user__username=username)
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewListThrottle, AnonRateThrottle]
 
     def get_queryset(self):
-        username = self.request.query_params.get('username', None)
-        return Review.objects.filter(review_user__username=username)
+        rating = self.kwargs['rating']
+        return Review.objects.filter(rating=rating)
+
+
+class UserReview(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)  # параметры записываются в URL
+        # username = self.kwargs['username']  для http://127.0.0.1:8000/reviews/iko/
+        return Review.objects.filter(review_user__username=username)  # для http://127.0.0.1:8000/reviews/?username=iko
 
 
 class ReviewCreate(generics.CreateAPIView):

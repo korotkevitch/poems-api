@@ -1,6 +1,6 @@
 from django.urls import path, re_path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import PoemAPIList, PoemAPIUpdate, PoemAPIDestroy, ReviewList, ReviewDetail, ReviewCreate, UserReview
+from .views import PoemAPIList, PoemAPIUpdate, PoemAPIDestroy, ReviewList, ReviewDetail, ReviewCreate, UserReview, RatingReview
 
 
 urlpatterns = [
@@ -18,5 +18,6 @@ urlpatterns = [
     path('<int:pk>/reviews/', ReviewList.as_view(), name='review-list'),
     path('review/<int:pk>/', ReviewDetail.as_view(), name='review-detail'),
 
+    path('reviews/<int:rating>/', RatingReview.as_view(), name='rating-review-detail'),
     path('reviews/', UserReview.as_view(), name='user-review-detail'),
 ]
