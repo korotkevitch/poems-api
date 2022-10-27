@@ -14,12 +14,14 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly, IsReviewUserOrReadOnly
 from .serializers import PoemSerializer, ReviewSerializer
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
+from .pagination import PoemPagination, PoemLOPagination, PoemCPagination
 
 
 class PoemAPIList(generics.ListCreateAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
     permission_classes = [IsAdminUser]
+    pagination_class = PoemPagination
 
 
 class PoemAPIUpdate(generics.RetrieveUpdateAPIView):
