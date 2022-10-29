@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
-
+from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.test import APITestCase
 from poem.models import Holiday
@@ -18,14 +18,31 @@ class HolidayApiTestCase(APITestCase):
         self.assertEqual(serializer_data, response.data)
 
 
-# class RegisterTestCase(APITestCase):
-#
-#     def test_register(self):
-#         data = {
-#             "username": "testcase",
-#             "email": "testcase@example.com",
-#             "password": "NewPassword@123",
-#             "password2": "NewPassword@123"
-#         }
-#         response = self.client.post(reverse('register'), data)
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+class TokenAuthUserProfileTestCase(APITestCase):
+    def test_api_jwt(self):
+        url = reverse('token_obtain_pair')
+        u = User.objects.create_user(username='iko9', password='i041291ko')
+        u.is_active = True
+        u.save()
+
+        response = self.client.post(url, {'username': 'iko9', 'password': 'i041291ko'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # print(response.data)
+        self.assertTrue('access' in response.data)
+        access = response.data['access']
+        print(access)
+
+        verification_url = 127.0.0.1:8000/auth/jwt/verify/
+        response = self.client.post(verification_url, {'token': access}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # resp = self.client.post(verification_url, {'token': 'abc'}, format='json')
+        # self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        #
+        # client = APIClient()
+        # client.credentials(HTTP_AUTHORIZATION='JWT ' + 'abc')
+        # resp = client.get('/api/v1/account/', data={'format': 'json'})
+        # self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+        # client.credentials(HTTP_AUTHORIZATION='JWT ' + token)
+        # resp = client.get('/api/v1/account/', data={'format': 'json'})
+        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
