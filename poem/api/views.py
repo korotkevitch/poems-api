@@ -12,9 +12,14 @@ from poem.models import Poem, Author, Holiday, Review
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly, IsReviewUserOrReadOnly
-from .serializers import PoemSerializer, ReviewSerializer
+from .serializers import PoemSerializer, ReviewSerializer, HolidaySerializer
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
-from .pagination import PoemPagination, PoemLOPagination, PoemCPagination
+from .pagination import PoemPagination
+
+
+class HolidayAPIList(generics.ListCreateAPIView):
+    queryset = Holiday.objects.all()
+    serializer_class = HolidaySerializer
 
 
 class PoemAPIList(generics.ListCreateAPIView):
