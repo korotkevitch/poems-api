@@ -25,7 +25,7 @@ class HolidayAPIList(generics.ListCreateAPIView):
 class PoemAPIList(generics.ListCreateAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
     pagination_class = PoemPagination
 
 
