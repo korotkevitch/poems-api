@@ -39,3 +39,27 @@ class TokenAuthUserProfileTestCase(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
         response = client.get('/api/poem/', data={'format': 'json'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class SimpleJwtUserPoemListCase(APITestCase):
+    main_url = reverse('poem-list')
+
+    def setUp(self):
+        self.user = self.client.post('/auth/users/', data={'username': 'iko9', 'password': 'i041291ko!'})
+        response = self.client.post('/auth/jwt/create/', data={'username': 'iko9', 'password': 'i041291ko!'})
+        self.token = response.data['access']
+        self.api_authentication()
+
+    def api_authentication(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+
+    # authentication is successful
+    def test_userprofile_is_authenticated(self):
+        response = self.client.get(self.main_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # authentication isn't successful
+    def test_userprofile_is_not_unauthenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.main_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
