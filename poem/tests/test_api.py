@@ -3,7 +3,6 @@ from django.urls import reverse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.test import APITestCase
-from rest_framework.test import APIClient
 from poem.models import Holiday
 from poem.api.serializers import HolidaySerializer
 
@@ -25,19 +24,18 @@ class TokenAuthUserProfileTestCase(APITestCase):
         user = User.objects.create_user(username='iko9', password='i041291ko')
         user.is_active = True
         user.save()
-        client = APIClient()
 
         response = self.client.post(url, {'username': 'iko9', 'password': 'i041291ko'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue('access' in response.data)
         token = response.data['access']
 
-        client.credentials(HTTP_AUTHORIZATION='Bearer ' + 'abc')
-        response = client.get('/api/poem/', data={'format': 'json'})
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + 'abc')
+        response = self.client.get('/api/poem/', data={'format': 'json'})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = client.get('/api/poem/', data={'format': 'json'})
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
+        response = self.client.get('/api/poem/', data={'format': 'json'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
