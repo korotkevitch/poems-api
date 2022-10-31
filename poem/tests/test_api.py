@@ -18,48 +18,56 @@ class HolidayApiTestCase(APITestCase):
         self.assertEqual(serializer_data, response.data)
 
 
-class TokenAuthUserProfileTestCase(APITestCase):
-    def setUp(self):
-        user = User.objects.create_superuser(username='iko9', password='i041291ko')
-        user.is_active = True
-        user.save()
-        url = reverse('token_obtain_pair')
-        response = self.client.post(url, {'username': 'iko9', 'password': 'i041291ko'}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue('access' in response.data)
-        global token
-        token = response.data['access']
-
-    def test_api_jwt(self):
-
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + 'abc')
-        response = self.client.get('/api/poem/', data={'format': 'json'})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
-        response = self.client.get('/api/poem/', data={'format': 'json'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-#
-# class SimpleJwtUserPoemListCase(APITestCase):
-#     main_url = reverse('poem-list')
-#
+# class JwtSuperuserTestCase(APITestCase):
 #     def setUp(self):
-#         self.user = self.client.post('/auth/users/', data={'username': 'iko9', 'password': 'i041291ko!'})
-#         response = self.client.post('/auth/jwt/create/', data={'username': 'iko9', 'password': 'i041291ko!'})
-#         self.token = response.data['access']
+#         user = User.objects.create_superuser(username='iko', password='i041291ko')
+#         user.save()
 #         self.api_authentication()
 #
 #     def api_authentication(self):
 #         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
 #
-#     # authentication is successful
-#     def test_userprofile_is_authenticated(self):
-#         response = self.client.get(self.main_url)
+#     def test_jwt_authorization(self):
+#         url = reverse('token_obtain_pair')
+#         response = self.client.post(url, {'username': 'iko', 'password': 'i041291ko'}, format='json')
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertTrue('access' in response.data)
+#         self.assertTrue('refresh' in response.data)
+#
+#     def test_poem_list(self):
+#         url = reverse('token_obtain_pair')
+#         response = self.client.post(url, {'username': 'iko', 'password': 'i041291ko'}, format='json')
+#
+#         token = response.data['access']
+#         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + token)
 #         self.assertEqual(response.status_code, status.HTTP_200_OK)
 #
-#     # authentication isn't successful
-#     def test_userprofile_is_not_unauthenticated(self):
-#         self.client.force_authenticate(user=None)
-#         response = self.client.get(self.main_url)
+#
+#         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + 'abc')
+#         response = self.client.get('/api/poem/', data={'format': 'json'})
 #         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class SimpleJwtSuperuserPoemListCase(APITestCase):
+    main_url = reverse('poem-list')
+
+    def setUp(self):
+        user = User.objects.create_superuser(username='iko', password='i041291ko')
+        user.save()
+        response = self.client.post('/auth/jwt/create/', data={'username': 'iko', 'password': 'i041291ko'})
+        self.token = response.data['access']
+        self.api_authentication()
+
+    def api_authentication(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+
+    # authentication is successful
+    def test_superuser_is_authenticated(self):
+        response = self.client.get(self.main_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # authentication isn't successful
+    def test_superuser_is_not_authenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.main_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
