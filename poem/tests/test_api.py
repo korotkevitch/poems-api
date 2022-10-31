@@ -19,16 +19,18 @@ class HolidayApiTestCase(APITestCase):
 
 
 class TokenAuthUserProfileTestCase(APITestCase):
-    def test_api_jwt(self):
-        url = reverse('token_obtain_pair')
+    def setUp(self):
         user = User.objects.create_superuser(username='iko9', password='i041291ko')
         user.is_active = True
         user.save()
-
+        url = reverse('token_obtain_pair')
         response = self.client.post(url, {'username': 'iko9', 'password': 'i041291ko'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue('access' in response.data)
+        global token
         token = response.data['access']
+
+    def test_api_jwt(self):
 
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + 'abc')
         response = self.client.get('/api/poem/', data={'format': 'json'})
