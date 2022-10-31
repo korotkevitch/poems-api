@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
+from rest_framework import viewsets
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 from rest_framework import filters
 
@@ -15,11 +15,13 @@ from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly, IsReviewUserOrRea
 from .serializers import PoemSerializer, ReviewSerializer, HolidaySerializer
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
 from .pagination import PoemPagination
+from .permissions import IsAdminOrReadOnly
 
 
-class HolidayAPIList(generics.ListCreateAPIView):
+class HolidayListVS(viewsets.ModelViewSet):
     queryset = Holiday.objects.all()
     serializer_class = HolidaySerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class PoemAPIList(generics.ListCreateAPIView):
