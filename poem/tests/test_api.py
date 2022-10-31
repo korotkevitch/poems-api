@@ -3,8 +3,8 @@ from django.urls import reverse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.test import APITestCase
-from poem.models import Holiday
-from poem.api.serializers import HolidaySerializer
+from poem.models import Holiday, Poem
+from poem.api.serializers import HolidaySerializer, PoemSerializer
 
 
 class HolidayApiTestCase(APITestCase):
@@ -23,13 +23,9 @@ class SimpleJwtSuperuserPoemListCase(APITestCase):
     main_url = reverse('poem-list')
 
     def setUp(self):
-        user = User.objects.create_superuser(username='iko', password='i041291ko')
-        user.save()
+        self.user = User.objects.create_superuser(username='iko', password='i041291ko')
         response = self.client.post('/auth/jwt/create/', data={'username': 'iko', 'password': 'i041291ko'})
         self.token = response.data['access']
-        self.api_authentication()
-
-    def api_authentication(self):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
 
     # authentication is successful
@@ -37,8 +33,16 @@ class SimpleJwtSuperuserPoemListCase(APITestCase):
         response = self.client.get(self.main_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # poem_1 = Poem.objects.create(title="title_1", holiday_id=="1", text='text_1', is_published=True, user.id=="1")
+        # response = self.client.get(self.main_url)
+        # serializer_data = PoemSerializer(poem_1).data
+        # self.assertEqual(status.HTTP_200_OK, response.status_code)
+        # self.assertEqual(serializer_data, response.data)
+
     # authentication isn't successful
     def test_superuser_is_not_authenticated(self):
         self.client.force_authenticate(user=None)
         response = self.client.get(self.main_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
