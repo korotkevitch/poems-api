@@ -22,9 +22,6 @@ class Author(models.Model):
     last_name = models.CharField('Фамилия', max_length=20)
     slug = models.SlugField(max_length=20, unique=True, blank=True)
 
-    def get_url(self):
-        return reverse('single_holiday', kwargs={'slug': self.slug})
-
     def __str__(self):
         return self.last_name
 
