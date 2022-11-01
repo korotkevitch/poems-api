@@ -33,7 +33,7 @@ class AuthorListVS(viewsets.ModelViewSet):
 class PoemAPIList(generics.ListCreateAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsOwnerOrReadOnly]
     pagination_class = PoemPagination
 
 
