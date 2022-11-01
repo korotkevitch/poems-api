@@ -1,11 +1,18 @@
 from rest_framework import serializers
-from poem.models import Poem, Review, Holiday
+from poem.models import Poem, Review, Holiday, Author
 
 
 class HolidaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Holiday
+        fields = "__all__"
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Author
         fields = "__all__"
 
 

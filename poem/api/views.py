@@ -12,7 +12,7 @@ from poem.models import Poem, Author, Holiday, Review
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly, IsReviewUserOrReadOnly
-from .serializers import PoemSerializer, ReviewSerializer, HolidaySerializer
+from .serializers import PoemSerializer, ReviewSerializer, HolidaySerializer, AuthorSerializer
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
 from .pagination import PoemPagination
 from .permissions import IsAdminOrReadOnly
@@ -21,6 +21,12 @@ from .permissions import IsAdminOrReadOnly
 class HolidayListVS(viewsets.ModelViewSet):
     queryset = Holiday.objects.all()
     serializer_class = HolidaySerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+
+class AuthorListVS(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
     permission_classes = [IsAdminOrReadOnly]
 
 

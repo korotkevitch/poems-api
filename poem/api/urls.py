@@ -2,11 +2,12 @@ from django.urls import path, re_path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import PoemAPIList, PoemAPIUpdate, PoemAPIDestroy, ReviewList, ReviewDetail, ReviewCreate, UserReview, \
-    RatingReview, HolidayListVS
+    RatingReview, HolidayListVS, AuthorListVS
 
 
 router = DefaultRouter()
 router.register('holiday', HolidayListVS)
+router.register('author', AuthorListVS)
 
 urlpatterns = [
     path('api/poem/', PoemAPIList.as_view(), name='poem-list'),
