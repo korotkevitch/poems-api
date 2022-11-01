@@ -35,8 +35,8 @@ class HolidayApiTestCase(APITestCase):
         self.assertEqual(models.Holiday.objects.count(), 1)
         self.assertEqual(models.Holiday.objects.get().name, 'name_1')
 
-
-class AuthorApiTestCase(APITestCase):
+# authenticated superuser
+class SuperuserAuthorApiTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_superuser(username='iko', password='iko@123.com')
         response = self.client.post(reverse('token_obtain_pair'), data={'username': 'iko', 'password': 'iko@123.com'})
@@ -49,28 +49,62 @@ class AuthorApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
-    def test_author_create_is_not_authenticated(self):
-        self.client.force_authenticate(user=None)
-        response = self.client.post(reverse('author-list'), data={'first_name': 'Igor', 'last_name': 'Korotkevitch', 'slug': 'korotkevitch'})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-
     def test_author_list_is_superadmin(self):
         response = self.client.get(reverse('author-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-    def test_author_list_is_not_authenticated(self):
+    def test_author_detail_is_superadmin(self):
+        response = self.client.get(reverse('author-detail', args=(self.author.id,)))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(models.Author.objects.count(), 1)
+        self.assertEqual(models.Author.objects.get().first_name, 'Igor2')
+
+# authenticated not superuser and unauthenticated
+class UserAuthorApiTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='iko', password='iko@123.com')
+        response = self.client.post(reverse('token_obtain_pair'), data={'username': 'iko', 'password': 'iko@123.com'})
+        self.token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+        self.author = models.Author.objects.create(first_name='Igor3', last_name='Korotkevitch3', slug='korotkevitch3')
+
+
+    def test_author_create_is_user(self):
+        response = self.client.post(reverse('author-list'), data={'first_name': 'Igor4', 'last_name': 'Korotkevitch4', 'slug': 'korotkevitch4'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    def test_author_create_is_not_authotized(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.post(reverse('author-list'), data={'first_name': 'Igor', 'last_name': 'Korotkevitch', 'slug': 'korotkevitch'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_author_list_is_user(self):
+        response = self.client.get(reverse('author-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_author_list_is_not_authotized(self):
         self.client.force_authenticate(user=None)
         response = self.client.get(reverse('author-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-    def test_author_detail(self):
+    def test_author_detail_is_user(self):
         response = self.client.get(reverse('author-detail', args=(self.author.id,)))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(models.Author.objects.count(), 1)
-        self.assertEqual(models.Author.objects.get().first_name, 'Igor2')
+        self.assertEqual(models.Author.objects.get().first_name, 'Igor3')
+
+
+    def test_author_detail_is_not_authotized(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(reverse('author-detail', args=(self.author.id,)))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(models.Author.objects.count(), 1)
+        self.assertEqual(models.Author.objects.get().first_name, 'Igor3')
 
 
 # class PoemApiTestCase(APITestCase):
