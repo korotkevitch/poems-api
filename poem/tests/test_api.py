@@ -217,3 +217,26 @@ class UserPoemApiTestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token2)
         response2 = self.client.delete(reverse('poem-delete', args=(self.poem.id,)))
         self.assertEqual(response2.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class ReviewTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='iko', password='iko@123.com')
+        response = self.client.post(reverse('token_obtain_pair'), data={'username': 'iko', 'password': 'iko@123.com'})
+        self.token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+        self.author = models.Author.objects.create(first_name='Igor7', last_name='Korotkevitch7', slug='korotkevitch7')
+        self.holiday = models.Holiday.objects.create(name="name_4", description="description_4", slug="slug_4")
+        self.poem = models.Poem.objects.create(title="Всем дням...", text="Всем дням особо...", is_published=True,
+                                               holiday=self.holiday, author=self.author, user=self.user)
+
+
+    def test_review_criate_is_user(self):
+        data = {
+            "review_user": self.user.id,
+            "rating": 4,
+            "description": "Классные стихи",
+            "active": True
+        }
+        response = self.client.post(reverse('review-create', args=(self.poem.id,)), data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
