@@ -68,8 +68,6 @@ class RatingReview(generics.ListAPIView):
 
 class UserReview(generics.ListAPIView):
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
-    throttle_classes = [ReviewListThrottle, AnonRateThrottle]
 
     def get_queryset(self):
         username = self.request.query_params.get('username', None)  # параметры записываются в URL
@@ -107,9 +105,8 @@ class ReviewCreate(generics.CreateAPIView):
 
 
 class ReviewList(generics.ListAPIView):
-    # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     throttle_classes = [ReviewListThrottle, AnonRateThrottle]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['review_user__username', 'active']

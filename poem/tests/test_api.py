@@ -231,8 +231,9 @@ class ReviewTestCase(APITestCase):
                                                holiday=self.holiday, author=self.author, user=self.user)
 
 
-    def test_review_criate_is_user(self):
+    def test_review_create_is_user(self):
         data = {
+            "poem": self.poem.id,
             "review_user": self.user.id,
             "rating": 4,
             "description": "Классные стихи",
@@ -240,3 +241,114 @@ class ReviewTestCase(APITestCase):
         }
         response = self.client.post(reverse('review-create', args=(self.poem.id,)), data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+    def test_review_create_is_not_authorized(self):
+        data = {
+            "review_user": self.user.id,
+            "rating": 4,
+            "description": "Классные стихи",
+            "active": True
+        }
+        self.client.force_authenticate(user=None)
+        response = self.client.post(reverse('review-create', args=(self.poem.id,)), data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_review_list_is_user(self):
+        response = self.client.get(reverse('review-list', args=(self.poem.id,)))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_review_list_is_not_authorized(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(reverse('review-list', args=(self.poem.id,)))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_review_update_is_review_user(self):
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        data = {
+            "poem": self.poem.id,
+            "review_user": self.user.id,
+            "rating": 4,
+            "description": "Классные стихи",
+            "active": False
+        }
+        response = self.client.put(reverse('review-detail', args=(self.review.id,)), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_review_update_is_not_review_user(self):
+        self.user2 = User.objects.create_user(username="iko2", password="iko2@123.com")
+        response2 = self.client.post(reverse('token_obtain_pair'), data={"username": "iko2", "password": "iko2@123.com"})
+        self.token2 = response2.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token2)
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        data = {
+            "poem": self.poem.id,
+            "review_user": self.user2.id,
+            "rating": 4,
+            "description": "Классные стихи",
+            "active": False
+        }
+        response = self.client.put(reverse('review-detail', args=(self.review.id,)), data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    def test_review_update_is_not_authorized(self):
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        data = {
+            "poem": self.poem.id,
+            "review_user": self.user.id,
+            "rating": 4,
+            "description": "Классные стихи",
+            "active": False
+        }
+        self.client.force_authenticate(user=None)
+        response = self.client.put(reverse('review-detail', args=(self.review.id,)), data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_review_delete_is_review_user(self):
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        response = self.client.delete(reverse('review-detail', args=(self.review.id,)))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+    def test_review_delete_is_not_review_user(self):
+        self.user2 = User.objects.create_user(username="iko2", password="iko2@123.com")
+        response2 = self.client.post(reverse('token_obtain_pair'), data={"username": "iko2", "password": "iko2@123.com"})
+        self.token2 = response2.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token2)
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        response = self.client.delete(reverse('review-detail', args=(self.review.id,)))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    def test_review_delete_is_not_authorized(self):
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        self.client.force_authenticate(user=None)
+        response = self.client.delete(reverse('review-detail', args=(self.review.id,)))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_user_review_is_user(self):
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        response = self.client.get('/reviews/?username=' + self.user.username)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_user_review_is_not_authorized(self):
+        self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
+                                                   description="Хорошие стихи", active=True)
+        self.client.force_authenticate(user=None)
+        response = self.client.get('/reviews/?username=' + self.user.username)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
