@@ -17,8 +17,7 @@ admin.site.register(Author, AuthorAdmin)
 
 
 class PoemAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'holiday', 'text', 'author', 'time_create', 'time_update', 'user', 'number_rating',
-                    'avg_rating']
+    list_display = ['id', 'title', 'holiday', 'text', 'author', 'user', 'number_rating', 'avg_rating']
     list_display_links = ['id', 'title']
 admin.site.register(Poem, PoemAdmin)
 

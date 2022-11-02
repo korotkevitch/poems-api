@@ -17,7 +17,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class PoemSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Poem

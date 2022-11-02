@@ -11,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from poem.models import Poem, Author, Holiday, Review
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly, IsReviewUserOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly, IsReviewUserOrReadOnly, IsPoemUserOrReadOnly
 from .serializers import PoemSerializer, ReviewSerializer, HolidaySerializer, AuthorSerializer
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
 from .pagination import PoemPagination
@@ -30,23 +30,30 @@ class AuthorListVS(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
 
-class PoemAPIList(generics.ListCreateAPIView):
+class PoemAPIList(generics.ListAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    # permission_classes = [IsAuthenticated]
+    pagination_class = PoemPagination
+
+
+class PoemAPICreate(generics.ListCreateAPIView):
+    queryset = Poem.objects.all()
+    serializer_class = PoemSerializer
+    permission_classes = [IsAuthenticated]
     pagination_class = PoemPagination
 
 
 class PoemAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsPoemUserOrReadOnly]
 
 
 class PoemAPIDestroy(generics.RetrieveDestroyAPIView):
     queryset = Poem.objects.all()
     serializer_class = PoemSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsPoemUserOrReadOnly]
 
 
 class RatingReview(generics.ListAPIView):

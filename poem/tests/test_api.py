@@ -75,7 +75,7 @@ class UserAuthorApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-    def test_author_create_is_not_authotized(self):
+    def test_author_create_is_not_authorized(self):
         self.client.force_authenticate(user=None)
         response = self.client.post(reverse('author-list'), data={'first_name': 'Igor', 'last_name': 'Korotkevitch', 'slug': 'korotkevitch'})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -86,7 +86,7 @@ class UserAuthorApiTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-    def test_author_list_is_not_authotized(self):
+    def test_author_list_is_not_authorized(self):
         self.client.force_authenticate(user=None)
         response = self.client.get(reverse('author-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -99,7 +99,7 @@ class UserAuthorApiTestCase(APITestCase):
         self.assertEqual(models.Author.objects.get().first_name, 'Igor3')
 
 
-    def test_author_detail_is_not_authotized(self):
+    def test_author_detail_is_not_authorized(self):
         self.client.force_authenticate(user=None)
         response = self.client.get(reverse('author-detail', args=(self.author.id,)))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -107,25 +107,113 @@ class UserAuthorApiTestCase(APITestCase):
         self.assertEqual(models.Author.objects.get().first_name, 'Igor3')
 
 
-# class PoemApiTestCase(APITestCase):
-#     main_url = reverse('poem-list')
-#
-#     def setUp(self):
-#         self.user = User.objects.create_superuser(username='iko', password='iko@123.com')
-#         response = self.client.post(reverse('token_obtain_pair'), data={'username': 'iko', 'password': 'iko@123.com'})
-#         self.token = response.data['access']
-#         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
-#
-#     # authentication is successful
-#     def test_superuser_is_authenticated(self):
-#         response = self.client.get(self.main_url)
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#
-#
-#     # authentication isn't successful
-#     def test_superuser_is_not_authenticated(self):
-#         self.client.force_authenticate(user=None)
-#         response = self.client.get(self.main_url)
-#         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+class UserPoemApiTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='iko5', password='iko5@123.com')
+        response = self.client.post(reverse('token_obtain_pair'), data={'username': 'iko5', 'password': 'iko5@123.com'})
+        self.token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token)
+        self.author = models.Author.objects.create(first_name='Igor5', last_name='Korotkevitch5', slug='korotkevitch5')
+        self.holiday = models.Holiday.objects.create(name="name_3", description="description_3", slug="slug_3")
+        self.poem = models.Poem.objects.create(title="Всем дням...", text="Всем дням особо", is_published=True,
+                                               holiday=self.holiday, author=self.author, user=self.user)
+
+    def test_poem_list_is_user(self):
+        response = self.client.get(reverse('poem-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+    def test_poem_list_is_not_authorized(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(reverse('poem-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_poem_create_is_user(self):
+        data = {
+            "title": "Всем",
+            "text": "Всем дням особо",
+            "is_published": True,
+            "holiday": self.holiday.id,
+            "author": self.author.id,
+            "user": self.user.id
+        }
+
+        response = self.client.post(reverse('poem-create'), data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+    def test_poem_create_is_not_authorized(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.post(reverse('poem-create'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_poem_update_is_user(self):
+        data = {
+            "title": "Всем",
+            "text": "Всем дням особо",
+            "is_published": True,
+            "holiday": self.holiday.id,
+            "author": self.author.id,
+            "user": self.user.id
+        }
+        response = self.client.put(reverse('poem-update', args=(self.poem.id,)), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    '''
+    Проверяем, сможет ли редактировать стихи не тот, кто их разместил (не user, а user2).
+    '''
+    def test_poem_update_is_user2(self):
+        self.user2 = User.objects.create_user(username='iko50', password='iko50@123.com')
+        response2 = self.client.post(reverse('token_obtain_pair'), data={'username': 'iko50', 'password': 'iko50@123.com'})
+        self.token2 = response2.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token2)
+
+        data = {
+            "title": "Всем",
+            "text": "Всем дням особо",
+            "is_published": True,
+            "holiday": self.holiday.id,
+            "author": self.author.id,
+            "user": self.user2.id
+        }
+        response2 = self.client.put(reverse('poem-update', args=(self.poem.id,)), data)
+        self.assertEqual(response2.status_code, status.HTTP_403_FORBIDDEN)
+
+
+    def test_poem_update_is_not_authorized(self):
+        data = {
+            "title": "Всем",
+            "text": "Всем дням особо",
+            "is_published": True,
+            "holiday": self.holiday.id,
+            "author": self.author.id,
+            "user": self.user.id
+        }
+        self.client.force_authenticate(user=None)
+        response = self.client.put(reverse('poem-update', args=(self.poem.id,)), data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+    def test_poem_ind_delete_is_user(self):
+        response = self.client.delete(reverse('poem-delete', args=(self.poem.id,)))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+    def test_poem_ind_delete_is_not_authorized(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.delete(reverse('poem-delete', args=(self.poem.id,)))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    '''
+    Проверяем, сможет ли удалить стихи не тот, кто их разместил (не user, а user2).
+    '''
+    def test_poem_ind_delete_is_user2(self):
+        self.user2 = User.objects.create_user(username='iko50', password='iko50@123.com')
+        response2 = self.client.post(reverse('token_obtain_pair'),
+                                     data={'username': 'iko50', 'password': 'iko50@123.com'})
+        self.token2 = response2.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + self.token2)
+        response2 = self.client.delete(reverse('poem-delete', args=(self.poem.id,)))
+        self.assertEqual(response2.status_code, status.HTTP_403_FORBIDDEN)
