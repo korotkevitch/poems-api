@@ -70,8 +70,7 @@ class UserReview(generics.ListAPIView):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
-        username = self.request.query_params.get('username', None)  # параметры записываются в URL
-        # username = self.kwargs['username']  для http://127.0.0.1:8000/reviews/iko/
+        username = self.request.query_params.get('username', None)
         return Review.objects.filter(review_user__username=username)  # для http://127.0.0.1:8000/reviews/?username=iko
 
 
