@@ -30,7 +30,7 @@ SECRET_KEY = env.str('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'korotkevitch.online']
+ALLOWED_HOSTS = ['127.0.0.1', 'poems.korotkevitch.online']
 
 
 # Application definition
@@ -179,3 +179,5 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,  # refresh token will be generated together with access token every launching of refresh
 }
+
+CSRF_TRUSTED_ORIGINS = ['https://*.korotkevitch.online', 'http://127.0.0.1']
