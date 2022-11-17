@@ -342,7 +342,7 @@ class ReviewTestCase(APITestCase):
     def test_user_review_is_user(self):
         self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
                                                    description="Хорошие стихи", active=True)
-        response = self.client.get('/reviews/?username=' + self.user.username)
+        response = self.client.get('/poems/reviews/?username=' + self.user.username)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -350,5 +350,5 @@ class ReviewTestCase(APITestCase):
         self.review = models.Review.objects.create(poem=self.poem, review_user=self.user, rating=4,
                                                    description="Хорошие стихи", active=True)
         self.client.force_authenticate(user=None)
-        response = self.client.get('/reviews/?username=' + self.user.username)
+        response = self.client.get('/poems/reviews/?username=' + self.user.username)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
