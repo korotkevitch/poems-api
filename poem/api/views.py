@@ -6,7 +6,6 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 from rest_framework import filters
-
 from django_filters.rest_framework import DjangoFilterBackend
 from poem.models import Poem, Author, Holiday, Review
 from rest_framework.exceptions import ValidationError
@@ -15,7 +14,6 @@ from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly, IsReviewUserOrRea
 from .serializers import PoemSerializer, ReviewSerializer, HolidaySerializer, AuthorSerializer
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
 from .pagination import PoemPagination
-from .permissions import IsAdminOrReadOnly
 
 
 class HolidayListVS(viewsets.ModelViewSet):

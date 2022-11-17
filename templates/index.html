@@ -1,0 +1,96 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Проект "Сервис ремонта и вскрытия замков"</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'vendors/linericon/style.css' %}">
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'vendors/owl-carousel/owl.carousel.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+	<link rel="stylesheet" href="{% static 'vendors/nice-select/css/nice-select.css' %}">
+	<!-- main css -->
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+	<section class="about_area section_gap">
+		<div class="container">
+			<div class="row justify-content-start align-items-center">
+				<div class="offset-lg-1 col-lg-12">
+					<div class="main_title text-left">
+						<h2>Сервис ремонта <br>
+							и вскрытия замков <br></h2>
+						<p>
+							Проект позволяет добавлять различные сервисы (вскрытие замков, ремонт замков, ремонт дверей,
+							вскрытие авто и др.) с описаниями и фотографиями.
+						</p>
+						<p>
+							Для каждого сервиса предусмотрена возможность опубликования статей (с фотографиями) на эту же тему
+							зарегистрированными пользователями. Каждая статья может быть оценена баллами рейтинга, а
+							также прокомментирована. Редактировать статьи могут только их авторы. Комментировать
+							можно не более одного раза.
+						</p>
+						<p> Для автоматической генерации названий графических файлов использованы уникальные идентификаторы uuid4.
+							Креды от базы и другие ключи вынесены в .env файл. В urls.py использованы routers. Ненужные файлы
+							размещены в .gitignore. Реализовано 28 юнит-тестов для контроля функциональности приложений.
+						</p>
+
+						<a class="primary_btn" href="/api/docs/"><span>Endpoints</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+	<section class="features_area">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-8 text-center">
+					<div class="main_title">
+						<h2>Технологии</h2>
+						<p>
+							Для создания REST api был использован Django-Rest-Framework. <br>
+							Автоматическое тестирование - на базе APITestCase, ручное - Postman.</p>
+					</div>
+				</div>
+			</div>
+			<div class="row feature_inner">
+				<div class="col-lg-3 col-md-6">
+					<div class="feature_item">
+						<h4>JWT</h4>
+						<p>Реализована вместе с библиотекой аутентификации Djoser</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="feature_item">
+						<h4>PostgreSQL</h4>
+						<p>База данных развернута на удаленном VPS в docker-контейнере</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="feature_item">
+						<h4>Swagger</h4>
+						<p>Использован в качестве инструмента для описания RESTful API</p>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<div class="feature_item">
+						<h4>docker-compose</h4>
+						<p>Для развертывания проекта на виртуальном сервере с Ubuntu 22.04</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+</body>
+
+</html>
