@@ -3,6 +3,7 @@ media/
 production_media/
 static/
 production_static/
+templates/
 
 # Django #
 *.log
